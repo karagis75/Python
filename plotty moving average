@@ -1,0 +1,46 @@
+import plotly.plotly as py
+import plotly as pn
+import plotly.graph_objs  as go
+#import plotly.plotly as py
+#import plotly.graph_objs as go
+
+import pandas as pd
+from datetime import datetime
+
+df = pd.read_csv('BHARTIARTL.NS-1115.csv')
+#df200dma   = pd.read_csv('Yesbank_200dma-1111.csv')
+
+#frames = [df2, df200dma]
+
+#df = pd.concat(frames)
+
+
+trace = go.Ohlc(x=df['Date'],
+                open=df['Open'],
+                high=df['High'],
+                low=df['Low'],
+                close=df['Close'],name="OHLC Daily Range",)
+
+ 
+
+
+layout = go.Layout(
+    xaxis = dict(
+        rangeslider = dict(
+            visible = True
+        )
+    )
+)
+
+data = [trace]
+
+
+fig = go.Figure(data=data, layout=layout)
+fig.add_trace(go.Scatter(x=df.Date, y=df['Close'].rolling(window=50).mean(), name="50 day SMA",line_color='deepskyblue'))
+fig.add_trace(go.Scatter(x=df.Date, y=df['Close'].rolling(window=200).mean(), name="200 day SMA",line_color='red'))
+fig.add_trace(go.Scatter(x=df.Date, y=df['Close'].rolling(window=20).mean(), name="20 day SMA",line_color='brown'))
+fig.update(layout_xaxis_rangeslider_visible=True)
+#   Create Html
+                         
+folder_name = 'OHLC with moving average' + '.html'
+pn.offline.plot(fig,filename=folder_name)
